@@ -39,8 +39,11 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 - npx create-next-app@latest
 - npm install react-redux
+- npm install @reduxjs/toolkit react-redux
 - npm install @mui/material @emotion/react @emotion/styled
 - npm install @mui/icons-material @mui/material @emotion/styled @emotion/react
+- npm install @mui/x-date-pickers
+- npm install dayjs
 
 ## Test
 

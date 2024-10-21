@@ -1,95 +1,164 @@
-import Image from "next/image";
+"use client";
 import styles from "./page.module.css";
+import Modal from "./component/modal";
+import Todolist from "./component/Todolist";
+import { useState } from "react";
+import { Box, Button, InputBase, IconButton } from "@mui/material";
+import Grid from "@mui/material/Grid2";
+import AddIcon from "@mui/icons-material/Add";
+import SearchIcon from "@mui/icons-material/Search";
+import { useSelector, useDispatch } from "react-redux";
+import { addTodo, editTodo, deleteTodo } from "./counterSlice";
+
+const init = {
+  id: null,
+  text: null,
+  status: null,
+  priority: null,
+  due_date: null,
+};
 
 export default function Home() {
-  return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>src/app/page.js</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [tasks, setTasks] = useState([]);
+  const [modal, setModal] = useState(false);
+  const [Obj, setObj] = useState(init);
+  const [editStatus, setEditStatus] = useState(false);
 
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+  const todos = useSelector((state) => state.list);
+  const dispatch = useDispatch();
+
+  const createID = () => {
+    let abc = "ABCDEFGHIJKLMNOPQR";
+    let num = "1234567890";
+    let newStr =
+      abc.split("")[Math.floor(Math.random() * 10 + 1)] +
+      abc.split("")[Math.floor(Math.random() * 10 + 1)] +
+      abc.split("")[Math.floor(Math.random() * 10 + 1)];
+    let newNum =
+      num.split("")[Math.floor(Math.random() * 10)] +
+      "" +
+      num.split("")[Math.floor(Math.random() * 10)] +
+      "" +
+      num.split("")[Math.floor(Math.random() * 10)];
+    return newStr + newNum;
+  };
+
+  const modalChange = () => {
+    setModal(!modal);
+  };
+
+  const handleAddTodo = () => {
+    if (input.trim()) {
+      dispatch(addTodo(input));
+      setInput("");
+    }
+  };
+
+  const handleEditTodo = (id, text) => {
+    setEditId(id);
+    setEditText(text);
+  };
+
+  const handleSaveEdit = () => {
+    dispatch(editTodo({ id: editId, newText: editText }));
+    setEditId(null);
+    setEditText("");
+  };
+
+  return (
+    <Box className={styles.page}>
+      <Box>
+        <Box>
+          <Box fontSize={34} fontWeight={400} color={"white"}>
+            To Do List
+          </Box>
+          <Box marginY={5}>
+            <Grid container spacing={2}>
+              <Grid size={10}>
+                <Box
+                  component="form"
+                  sx={{
+                    p: "2px 4px",
+                    display: "flex",
+                    alignItems: "center",
+                    width: "100%",
+                    backgroundColor: "#1E1E1E",
+                    borderRadius: 2,
+                  }}
+                >
+                  <IconButton
+                    type="button"
+                    sx={{ p: "10px", color: "#ccc" }}
+                    aria-label="search"
+                  >
+                    <SearchIcon />
+                  </IconButton>
+                  <InputBase
+                    sx={{ ml: 1, flex: 1, color: "#ccc" }}
+                    placeholder="Search Google Maps"
+                    inputProps={{ "aria-label": "search google maps" }}
+                  />
+                </Box>
+              </Grid>
+              <Grid size={2}>
+                <Button
+                  variant="contained"
+                  endIcon={<AddIcon />}
+                  onClick={addHandle}
+                  className={styles.text}
+                  style={{ height: "100%" }}
+                >
+                  ADD
+                </Button>
+              </Grid>
+            </Grid>
+          </Box>
+        </Box>
+
+        <Box gap={5}>
+          <Box color={"#F9BD34"}>INCOMPLETE</Box>
+          <Todolist
+            tasks={tasks}
+            setTasks={setTasks}
+            deleteList={deleteList}
+            edit={edit}
+            done={done}
           />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
+        </Box>
+        <Box>
+          <Box color={"#7F76F0"}>PROGRESS</Box>
+          <Todolist
+            tasks={tasks}
+            setTasks={setTasks}
+            deleteList={deleteList}
+            edit={edit}
+            done={done}
           />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
+        </Box>
+        <Box>
+          <Box color={"#31A069"}>COMPLETE</Box>
+          <Todolist
+            tasks={tasks}
+            setTasks={setTasks}
+            deleteList={deleteList}
+            edit={edit}
+            done={done}
           />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+        </Box>
+        <Box>
+          <Modal
+            modal={modal}
+            setModal={modalChange}
+            setTasks={setTasks}
+            tasks={tasks}
+            addList={AddList}
+            Obj={Obj}
+            setObj={setObj}
+            editStatus={editStatus}
+            init={init}
+          />
+        </Box>
+      </Box>
+    </Box>
   );
 }
