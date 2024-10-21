@@ -55,22 +55,21 @@ a {
   width: 100%;
   height: 100%;
   background-color: rgba(68, 68, 68, 0.9);
+  justify-content: center;
 }
 .modal-body {
   padding: 20px;
   width: 450px;
   height: 50svh;
   background-color: #ededed;
-  right: 25svh;
   position: absolute;
   top: 100px;
-  margin-left: auto;
-  margin-right: auto;
   border-radius: 4px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: center;
   color: white;
   overflow: scroll;
+  /* right: 20svw; */
 }
 

@@ -7,29 +7,35 @@ import dayjs from "dayjs";
 import { DatePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import PanoramaFishEyeIcon from "@mui/icons-material/PanoramaFishEye";
 import ChangeCircleIcon from "@mui/icons-material/ChangeCircle";
 import RadioButtonCheckedIcon from "@mui/icons-material/RadioButtonChecked";
 
-const Modal = ({ modal, setModal, addList, Obj, setObj, editStatus }) => {
-  const dis = modal ? "block" : "none";
+const Modal = ({
+  modal,
+  setModal,
+  addList,
+  editList,
+  currentTodo,
+  setCurrent,
+}) => {
+  const dis = modal ? "flex" : "none";
 
-  const handleChange = (event) => {
-    setAge(event.target.value);
-  };
   return (
     <Box className="modal" style={{ display: dis }} onClick={setModal}>
       <Box className="modal-body" onClick={(e) => e.stopPropagation()}>
         <Box fontSize={35} fontWeight={400} color={"black"}>
-          {Obj.isEdit ? "Edit task" : "Add Task"}
+          {currentTodo.id ? "Edit task" : "Add Task"}
         </Box>
         <Box>
           <Box marginY={2}>
             <TextField
               sx={{ color: "#ccc", width: "100%" }}
               placeholder="Text Here"
-              value={Obj.input}
-              onChange={(e) => setObj({ ...Obj, input: e.target.value })}
+              value={currentTodo.text}
+              defaultValue={null}
+              onChange={(e) =>
+                setCurrent({ ...currentTodo, text: e.target.value })
+              }
               multiline
             />
           </Box>
@@ -42,28 +48,42 @@ const Modal = ({ modal, setModal, addList, Obj, setObj, editStatus }) => {
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
                     label="Status"
-                    // onChange={handleChange}
-                    // value={Obj.type}
-                    value={10}
-                    onChange={(e) => setObj({ ...Obj, type: e.target.value })}
+                    value={currentTodo.status}
+                    onChange={(e) =>
+                      setCurrent({ ...currentTodo, status: e.target.value })
+                    }
                   >
-                    <MenuItem value={10}>
+                    <MenuItem value={"Incomplete"}>
                       <Box
                         style={{
                           display: "flex",
                           alignItems: "center",
                         }}
                       >
-                        <PanoramaFishEyeIcon color={"error"} />
+                        <RadioButtonCheckedIcon color={"error"} />
                         Incomplete
                       </Box>
                     </MenuItem>
-                    <MenuItem value={20}>
-                      <ChangeCircleIcon color={"primary"} /> Progress
+                    <MenuItem value={"Progress"}>
+                      <Box
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                        }}
+                      >
+                        <ChangeCircleIcon color={"primary"} /> Progress
+                      </Box>
                     </MenuItem>
-                    <MenuItem value={30}>
-                      <RadioButtonCheckedIcon color={"success"} />
-                      Complete
+                    <MenuItem value={"Complete"}>
+                      <Box
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                        }}
+                      >
+                        <RadioButtonCheckedIcon color={"success"} />
+                        Complete
+                      </Box>
                     </MenuItem>
                   </Select>
                 </FormControl>
@@ -76,15 +96,15 @@ const Modal = ({ modal, setModal, addList, Obj, setObj, editStatus }) => {
                   <Select
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
-                    label="Status"
-                    // onChange={handleChange}
-                    // value={Obj.type}
-                    value={10}
-                    onChange={(e) => setObj({ ...Obj, type: e.target.value })}
+                    label="Priority"
+                    value={currentTodo.priority}
+                    onChange={(e) =>
+                      setCurrent({ ...currentTodo, priority: e.target.value })
+                    }
                   >
-                    <MenuItem value={10}>Urgent</MenuItem>
-                    <MenuItem value={20}>Normal</MenuItem>
-                    <MenuItem value={30}>Low</MenuItem>
+                    <MenuItem value={"Urgent"}>Urgent</MenuItem>
+                    <MenuItem value={"Normal"}>Normal</MenuItem>
+                    <MenuItem value={"Low"}>Low</MenuItem>
                   </Select>
                 </FormControl>
               </Grid2>
@@ -92,7 +112,12 @@ const Modal = ({ modal, setModal, addList, Obj, setObj, editStatus }) => {
           </Box>
           <Box marginY={2}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker defaultValue={dayjs("2022-04-17")} />
+              <DatePicker
+                defaultValue={dayjs(currentTodo.due_date)}
+                onChange={(e) => {
+                  setCurrent({ ...currentTodo, due_date: e });
+                }}
+              />
             </LocalizationProvider>
           </Box>
         </Box>
@@ -107,11 +132,11 @@ const Modal = ({ modal, setModal, addList, Obj, setObj, editStatus }) => {
           </Button>
           <Button
             variant="contained"
-            onClick={() => addList()}
+            onClick={() => (currentTodo.id ? editList() : addList())}
             style={{ height: "100%" }}
             color="success"
           >
-            {Obj.isEdit ? "Save" : "Add"}
+            {currentTodo.id ? "Save" : "Add"}
           </Button>
         </Grid2>
       </Box>

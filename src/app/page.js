@@ -8,7 +8,7 @@ import Grid from "@mui/material/Grid2";
 import AddIcon from "@mui/icons-material/Add";
 import SearchIcon from "@mui/icons-material/Search";
 import { useSelector, useDispatch } from "react-redux";
-import { addTodo, editTodo, deleteTodo } from "./counterSlice";
+import { addTodo, editTodo, deleteTodo } from "../features/list/listSlice";
 
 const init = {
   id: null,
@@ -19,13 +19,16 @@ const init = {
 };
 
 export default function Home() {
-  const [tasks, setTasks] = useState([]);
   const [modal, setModal] = useState(false);
-  const [Obj, setObj] = useState(init);
-  const [editStatus, setEditStatus] = useState(false);
+  const [currentTodo, setCurrent] = useState(init);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const todos = useSelector((state) => state.list);
   const dispatch = useDispatch();
+
+  const filteredTodos = todos.filter((todo) =>
+    todo.text.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const createID = () => {
     let abc = "ABCDEFGHIJKLMNOPQR";
@@ -45,24 +48,38 @@ export default function Home() {
 
   const modalChange = () => {
     setModal(!modal);
+    setCurrent(init);
   };
 
-  const handleAddTodo = () => {
-    if (input.trim()) {
-      dispatch(addTodo(input));
-      setInput("");
-    }
-  };
-
-  const handleEditTodo = (id, text) => {
-    setEditId(id);
-    setEditText(text);
+  const handleEditTodo = (id) => {
+    const data = todos.filter((data) => data.id == id);
+    setCurrent(data[0]);
+    setModal(true);
   };
 
   const handleSaveEdit = () => {
-    dispatch(editTodo({ id: editId, newText: editText }));
-    setEditId(null);
-    setEditText("");
+    dispatch(editTodo(currentTodo));
+    setCurrent(init);
+    setModal(false);
+  };
+
+  const handleAddTodo = () => {
+    setCurrent(init);
+    setModal(true);
+  };
+
+  const handleSaveAdd = () => {
+    if (currentTodo.text) {
+      dispatch(addTodo({ ...currentTodo, id: createID() }));
+    } else {
+      alert("Please fill the all");
+    }
+    setCurrent(init);
+    setModal(false);
+  };
+
+  const handleDeleteTodo = (id) => {
+    dispatch(deleteTodo(id));
   };
 
   return (
@@ -97,6 +114,7 @@ export default function Home() {
                     sx={{ ml: 1, flex: 1, color: "#ccc" }}
                     placeholder="Search Google Maps"
                     inputProps={{ "aria-label": "search google maps" }}
+                    onChange={(e) => setSearchTerm(e.target.value)}
                   />
                 </Box>
               </Grid>
@@ -104,7 +122,7 @@ export default function Home() {
                 <Button
                   variant="contained"
                   endIcon={<AddIcon />}
-                  onClick={addHandle}
+                  onClick={handleAddTodo}
                   className={styles.text}
                   style={{ height: "100%" }}
                 >
@@ -115,47 +133,50 @@ export default function Home() {
           </Box>
         </Box>
 
-        <Box gap={5}>
+        <Box marginY={5}>
           <Box color={"#F9BD34"}>INCOMPLETE</Box>
           <Todolist
-            tasks={tasks}
-            setTasks={setTasks}
-            deleteList={deleteList}
-            edit={edit}
-            done={done}
+            tasks={filteredTodos}
+            deleteList={handleDeleteTodo}
+            edit={handleEditTodo}
+            status={"Incomplete"}
           />
         </Box>
-        <Box>
+        <Box marginY={5}>
           <Box color={"#7F76F0"}>PROGRESS</Box>
           <Todolist
-            tasks={tasks}
-            setTasks={setTasks}
-            deleteList={deleteList}
-            edit={edit}
-            done={done}
+            tasks={filteredTodos}
+            deleteList={handleDeleteTodo}
+            edit={handleEditTodo}
+            status={"Progress"}
           />
         </Box>
-        <Box>
+        <Box marginY={5}>
           <Box color={"#31A069"}>COMPLETE</Box>
           <Todolist
-            tasks={tasks}
-            setTasks={setTasks}
-            deleteList={deleteList}
-            edit={edit}
-            done={done}
+            tasks={filteredTodos}
+            deleteList={handleDeleteTodo}
+            edit={handleEditTodo}
+            status={"Complete"}
+          />
+        </Box>
+        <Box marginY={5}>
+          <Box color={"white"}>NO STATUS</Box>
+          <Todolist
+            tasks={filteredTodos}
+            deleteList={handleDeleteTodo}
+            edit={handleEditTodo}
+            status={null}
           />
         </Box>
         <Box>
           <Modal
             modal={modal}
             setModal={modalChange}
-            setTasks={setTasks}
-            tasks={tasks}
-            addList={AddList}
-            Obj={Obj}
-            setObj={setObj}
-            editStatus={editStatus}
-            init={init}
+            addList={handleSaveAdd}
+            editList={handleSaveEdit}
+            currentTodo={currentTodo}
+            setCurrent={setCurrent}
           />
         </Box>
       </Box>
